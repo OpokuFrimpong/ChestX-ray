@@ -1,0 +1,58 @@
+/* General Button Styling */
+button {
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Sign Up Button */
+.submit {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+    text-transform: uppercase;
+}
+
+.submit:hover {
+    background: linear-gradient(90deg, #2575fc, #6a11cb);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Login Button */
+.submit + .submit {
+    margin-left: 15px;
+    background: linear-gradient(90deg, #ff7e5f, #feb47b);
+    color: white;
+}
+
+.submit + .submit:hover {
+    background: linear-gradient(90deg, #feb47b, #ff7e5f);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Google Login Button */
+.google-login {
+    margin-top: 20px;
+    background: white;
+    color: #4285f4;
+    border: 2px solid #4285f4;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.google-login:hover {
+    background: #4285f4;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}

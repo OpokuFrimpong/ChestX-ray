@@ -1,0 +1,142 @@
+
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Chest X-Ray Analysis API</title>
+                <style>
+                    body { 
+                        font-family: Arial, sans-serif; 
+                        margin: 0;
+                        padding: 20px;
+                        line-height: 1.6;
+                    }
+                    .container {
+                        max-width: 800px;
+                        margin: 0 auto;
+                        background: #f9f9f9;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                    }
+                    h1 { color: #333; }
+                    .upload-form {
+                        margin: 20px 0;
+                        padding: 15px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                    }
+                    .result {
+                        margin-top: 20px;
+                        padding: 15px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        background: white;
+                    }
+                    .detected {
+                        background-color: #e8f5e9;
+                        font-weight: bold;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>Chest X-Ray Analysis</h1>
+                    <p>This API analyzes chest X-ray images for 14 different medical conditions.</p>
+                    
+                    <div class="upload-form">
+                        <h3>Test the API</h3>
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <input type="file" id="imageInput" accept="image/*">
+                            <button type="button" onclick="analyzeImage()">Analyze X-ray</button>
+                        </form>
+                    </div>
+                    
+                    <div id="result" class="result">
+                        <p>Upload an X-ray image to see results</p>
+                    </div>
+                </div>
+
+                <script>
+                function analyzeImage() {
+                    const fileInput = document.getElementById('imageInput');
+                    const resultDiv = document.getElementById('result');
+                    
+                    if (!fileInput.files[0]) {
+                        alert('Please select an image file');
+                        return;
+                    }
+                    
+                    // Display loading indicator
+                    resultDiv.innerHTML = '<p>Analyzing X-ray image...</p>';
+                    
+                    const formData = new FormData();
+                    formData.append('image', fileInput.files[0]);
+                    
+                    fetch('/api/predict', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Display results
+                        let html = '<h3>X-ray Analysis Results:</h3>';
+                        
+                        // Show detected conditions
+                        if (data.detected_conditions.length > 0) {
+                            html += '<h4>Detected Conditions:</h4>';
+                            html += '<ul>';
+                            data.detected_conditions.forEach(condition => {
+                                html += `<li>${condition}</li>`;
+                            });
+                            html += '</ul>';
+                        } else {
+                            html += '<p>No conditions detected.</p>';
+                        }
+                        
+                        // Show all probabilities
+                        html += '<h4>Probability Scores:</h4>';
+                        html += '<table>';
+                        html += '<tr><th>Condition</th><th>Probability</th></tr>';
+                        
+                        // Sort by probability
+                        const sortedPredictions = Object.entries(data.predictions)
+                            .sort((a, b) => b[1] - a[1]);
+                        
+                        sortedPredictions.forEach(([condition, probability]) => {
+                            const isDetected = data.detected_conditions.includes(condition);
+                            const rowClass = isDetected ? 'class="detected"' : '';
+                            html += `<tr ${rowClass}>
+                                <td>${condition}</td>
+                                <td>${(probability * 100).toFixed(2)}%</td>
+                            </tr>`;
+                        });
+                        
+                        html += '</table>';
+                        
+                        resultDiv.innerHTML = html;
+                    })
+                    .catch(error => {
+                        resultDiv.innerHTML = `<p style="color: red">Error: ${error.message}</p>`;
+                    });
+                }
+                </script>
+            </body>
+            </html>
+            
